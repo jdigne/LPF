@@ -4,7 +4,7 @@ Author: Julie Digne 2015-2020
 julie 'dot' digne 'at' liris 'dot' cnrs 'dot' fr
 
 
-##Description
+## Description
 
 This code is an implementation of the paper:
 
@@ -41,7 +41,7 @@ This code uses the cmdLine tool by Pascal Monasse (file cmdLine.h).
 The code is shipped with Eigen and nanoflann and has no other dependency.
 
 
-##Usage
+## Usage
     lpf INPUT SEEDS OUTPUT -r <radius> -p -A <natoms>  
     lpf INPUT SEEDS OUTPUT -r <radius> -p -R <natoms>  
     lpf INPUT SEEDS OUTPUT -r <radius> -p -D <natoms>  
@@ -99,7 +99,7 @@ The seeds can a subset of the input points.
 lpf noisy.txt seeds.txt output.txt -r 0.7 -n 16 -N 20 -A 32 -l 0.2
 
 
-##Input data
+## Input data
 
 This program takes as input a point cloud to analyze, a set of seeds, and optionally a generic pattern file and a dictionary file.
 
@@ -121,6 +121,6 @@ xn	yn	zn
 
 The coordinates for the generic pattern points are considered as scales.
 
-###Dictionary file
+### Dictionary file
 
 The (optional) dictionary file should be formatted as a plain matrix. If the generic pattern contains M points and the dictionary contains D atoms, then this file should have *3M* lines and *D* columns.
