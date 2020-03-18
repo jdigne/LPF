@@ -1,7 +1,7 @@
 # Local Probing Fields Analysis
 
-Author: Julie Digne 2015-2019  
-julie.digne@liris.cnrs.fr
+Author: Julie Digne 2015-2020
+julie 'dot' digne 'at' liris 'dot' cnrs 'dot' fr
 
 
 ##Description
