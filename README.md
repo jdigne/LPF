@@ -37,7 +37,9 @@ The build process relies on cmake which should be installed. Tested on Ubuntu 16
 + cmake -DCMAKE_BUILD_TYPE=Release ..
 + make
 
+This code uses the cmdLine tool by Pascal Monasse (file cmdLine.h).
 The code is shipped with Eigen and nanoflann and has no other dependency.
+
 
 ##Usage
     lpf INPUT SEEDS OUTPUT -r <radius> -p -A <natoms>  
