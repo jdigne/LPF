@@ -1,2 +1,82 @@
-# LPF
-Implementation of the Local Probing Field paper
+# Local Probing Fields Analysis
+
+Author: Julie Digne 2015-2019
+name.surname@liris.cnrs.fr
+
+## Disclaimer
+
+This code is an implementation of the paper:
+
+Sparse Geometric Representation Through Local Shape Probing Julie Digne, Sébastien Valette, Raphaëlle Chaine, IEEE Transactions on Visualization and Computer Graphics, vol. 24, n. 7, pp2238-2250, July 2018.
+
+(The paper was presented at Symposium on Geometry Processing - SGP - 2018)
+
+Project's webpage: 
+https://perso.liris.cnrs.fr/julie.digne/articles/lpf.html  
+PDF paper: 
+https://perso.liris.cnrs.fr/julie.digne/articles/lpf.pdf 
+IEEE final version: 
+https://ieeexplore.ieee.org/document/7956272 
+
+## License
+
+## Build instructions
+
+The build process relies on cmake which should be installed. Tested on Ubuntu 16.04, 18.04, 19.10.
+
+1) Clone the project
+2) cd LPF
+3) mkdir build
+4) cd build
+5) cmake -DCMAKE_BUILD_TYPE=Release ..
+6) make
+
+The code is shipped with Eigen and nanoflann and has no other dependency.
+
+##Usage
+    descriptor INPUT OUTPUT -r <radius> -p -type
+
+INPUT  (mandatory) ascii file containing the point set to analyze
+SEEDS  (mandatory) ascii file containing the seeds where analysis will be performed
+OUTPUT (mandatory) output file combined file
+    
+-r     (recommended) Radius that will be used to interpolate x,y positions. Otherwise r=1 will be used.
+-p     (recommended) will perform the computation in parallel.
+-n     number of bins: will compute a unit-square grid with nxn points and keep only the points within radius 1. (All neighborhoods will be rescaled to 1). Altenatively use a specific generic pattern (option -g). If no file, an invalid file and no number of bins is specified a default number of bins (10) is used.
+-l     lambda penalty for the sparse optimization. Default: 0.2.
+-s     Save immediately the descriptor (low memory consumption).
+-A     <natoms> analyse the descriptors.
+-R     <natoms> analyse the descriptors and resample.
+-D     <natoms> analyse the descriptors and denoise.
+-v     verify the reconstruction from the descriptors and outputs the point cloud. If -v and -s are both set, then -v will prevail
+-N     <n> number of iterations for the dictionary computation. Default: 10.
+-g     <file> sets the generic pattern to a precise file. See also '-n' option. If both -g and -n are used, and if the generic pattern file is valid, -g will prevail.
+-d     <file> input dictionary file
+-c     Compute parameterization instead of using a random initial seed orientation
+
+NOTE: every file containing points is formatted as:
+x1	y1	z1
+x2	y2	z2
+.	.	.
+.	.	.
+xn	yn	zn
+
+### Example command line for denoising:
+
+The seeds and the input file should be the same:
+
+lpf noisy.txt noisy.txt output.txt -r 0.7 -n 16 -N 20 -D 32 -l 0.2
+
+
+### Example command line for resampling
+
+The seeds can a subset of the input points.
+
+lpf noisy.txt seeds.txt output.txt -r 0.7 -n 16 -N 20 -R 32 -l 0.2
+
+
+### Example command line for analysis
+
+The seeds can a subset of the input points.
+
+lpf noisy.txt seeds.txt output.txt -r 0.7 -n 16 -N 20 -A 32 -l 0.2
