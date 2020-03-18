@@ -1,10 +1,10 @@
 /**
  * This file is part of lpf
  *
- * @file
+ * @file Octree.h
  * @author Julie Digne
  *
- * Copyright (c) 2015-2020 Julie Digne
+ * Copyright (c) 2012-2020 Julie Digne
  * All rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -41,12 +41,13 @@
 #define OCTREE_H
 
 #include "OctreeNode.h"
+#include "utils_octree.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
 #include <Eigen/Dense>
-#include "utils_octree.h"
 
 using Eigen::Vector3d;
 

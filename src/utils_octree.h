@@ -1,7 +1,7 @@
 /**
  * This file is part of lpf
  *
- * @file
+ * @file utils_octree.h
  * @author Julie Digne
  *
  * Copyright (c) 2015-2020 Julie Digne
