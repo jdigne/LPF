@@ -55,8 +55,6 @@ The code is shipped with Eigen and nanoflann and has no other dependency.
     
 **-r**     `<radius>` (recommended) Radius that will be used to interpolate x,y positions. Otherwise r=1 will be used.  
 
-**-p**     (recommended) will perform the computation in parallel.  
-
 **-n**     `<nbins>` number of bins: will compute a unit-square grid with nxn points and keep only the points within radius 1. (All neighborhoods will be rescaled to 1). Alternatively use a specific generic pattern (option -g). If no file, an invalid file and no number of bins is specified a default number of bins (10) is used.  
 
 **-l**     `<lambda>` lambda penalty for the sparse optimization. Default: 0.2.  
@@ -78,6 +76,9 @@ The code is shipped with Eigen and nanoflann and has no other dependency.
 **-d**     `<file>` input dictionary file  
 
 **-c**     Compute parameterization instead of using a random initial seed orientation
+
+**-p**	   `<file>` use a parameterization file for the seeds
+
 
 ### Example command line for denoising:
 

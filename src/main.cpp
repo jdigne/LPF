@@ -64,7 +64,6 @@ void usage()
     std::cout<<"OUTPUT (mandatory) output file combined file"<<std::endl;
     std::cout<<"-r     <radius> (recommended) Radius that will be used to interpolate x,y positions. Otherwise $r=1$ will be used"<<std::endl;
     std::cout<<std::endl;
-    std::cout<<"-p     (recommended) will perform the computation in parallel."<<std::endl;
     std::cout<<"-n     <nbins> number of bins for building the generic pattern. Alternatively use a file (-g)"<<std::endl;
     std::cout<<"-l     <lambda> penalty for the sparse optimization"<<std::endl;
     std::cout<<"-s     save immediately the descriptor (low memory consumption)"<<std::endl;
@@ -78,6 +77,7 @@ void usage()
     std::cout<<"-g     <file> sets the generic pattern to a precise file"<<std::endl;
     std::cout<<"-d     <file> input dictionary file"<<std::endl;
     std::cout<<"-c     Compute parameterization instead of using a random initial seed orientation"<<std::endl;    
+    std::cout<<"-p     <file> use a parameterization file for the seeds."<<std::endl;
 }
 
 /**
