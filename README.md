@@ -43,9 +43,9 @@ The code is shipped with Eigen and nanoflann and has no other dependency.
 
 
 ## Usage
-    lpf INPUT SEEDS OUTPUT -r <radius> -p -A <natoms>  
-    lpf INPUT SEEDS OUTPUT -r <radius> -p -R <natoms>  
-    lpf INPUT SEEDS OUTPUT -r <radius> -p -D <natoms>  
+    lpf INPUT SEEDS OUTPUT -r <radius> -A <natoms>  
+    lpf INPUT SEEDS OUTPUT -r <radius> -R <natoms>  
+    lpf INPUT SEEDS OUTPUT -r <radius> -D <natoms>  
 
 **INPUT**  (mandatory) ascii file containing the point set to analyze 
 
