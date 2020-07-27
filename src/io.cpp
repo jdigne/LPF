@@ -71,6 +71,9 @@ bool IO::readPoints(const char* filename, vector< Vector3d >& data)
     iss >> x >> y >> z;
   }
   
+  //debug
+  savePoints("test.xyz",data);
+  
   in.close();
   return true;
 }
@@ -152,7 +155,8 @@ bool IO::savePoints(const char* filename, const vector< Vector3d >& data)
   out.open(filename);
   if(!out)
     return false;
-
+  out.precision( std::numeric_limits<double>::digits10 + 1);
+  
   for(size_t i = 0; i < data.size(); ++i)
   {
     out << data[i](0) <<"\t"<<data[i](1)<<"\t"<<data[i](2)<< "\n";
@@ -169,7 +173,7 @@ bool IO::saveMatrix(const char* filename, const MatrixXd& M)
   out.open(filename);
   if(!out)
     return false;
-  
+  out.precision( std::numeric_limits<double>::digits10 + 1);
   out << M;
   return true;
 }
