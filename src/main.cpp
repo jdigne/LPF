@@ -94,7 +94,6 @@ int main(int argc, char **argv)
   int nbins = 0;
   int natoms = 0;
   int parallel_flag = -1;
-  int lpf_flag = -1;
   int niter = 10;
   double lambda=0.2;
 
@@ -273,150 +272,147 @@ int main(int argc, char **argv)
     }
   }
   
-  if(lpf_flag)
+  std::cout<<"Computing LPF descriptors"<<std::endl;
+
+  if( (cmd.used('s')) && (! cmd.used('v')) )
   {
-    std::cout<<"Computing LPF descriptors"<<std::endl;
-
-    if( (cmd.used('s')) && (! cmd.used('v')) )
+    std::time(&start);
+    desc.computeAndSaveDescriptors<LPF>(seeds, points, t1s, t2s, normals, outfile.c_str());
+    std::time(&end);
+    std::cout<<"LPF Computation and Saving time "<<difftime(end, start)<<" s."<<std::endl;
+  }
+  else
+  {
+    if (cmd.used('A'))
     {
+      std::cout<<"Analyzing"<<std::endl;
+      std::vector<LPF*> descriptors;
       std::time(&start);
-      desc.computeAndSaveDescriptors<LPF>(seeds, points, t1s, t2s, normals, outfile.c_str());
+      desc.computeDescriptorsWithEfficiencyOptim(seeds, points, t1s, t2s, normals, descriptors);
       std::time(&end);
-      std::cout<<"LPF Computation and Saving time "<<difftime(end, start)<<" s."<<std::endl;
+      std::cout<<"LPF Computation  time "<<difftime(end, start)<<" s."<<std::endl;
+      
+      std::cout<<"Perform descriptor analysis"<<std::endl;
+      
+      DescriptorAnalysis analysis(descriptors);
+      analysis.setGenericPattern(queries);
+      
+      MatrixXd t(descriptors.size(), 3);
+      t.setZero();
+      unsigned int dic_update_niter = 10;
+      
+      
+      std::cout<<"Learning a dictionary of size "<<natoms<<std::endl;
+      std::time(&start);
+      analysis.learnLPFdictionaryAndFramesICP(descriptors, D, alpha, t, t1s, t2s, normals, natoms, lambda, dic_update_niter, niter);
+      std::time(&end);
+      std::cout<<"Dictionary learning time "<<difftime(end, start)<<" s."<<std::endl;
+      
+      DescriptorReconstruction rec(radius);
+      std::cout<<"Translating the seeds"<<std::endl;
+      rec.adaptSeeds(seeds, t);
+      
+      while(! descriptors.empty())
+      {
+        if(descriptors.back() != NULL)
+          delete descriptors.back();
+        descriptors.pop_back();
+      }
+      
+      IO::saveMatrix("dictionary.asc", D);
+      IO::saveMatrix("coeffs.asc", alpha);
+      IO::savePoints("genpat.asc", queries);
+      IO::saveParams("params_with_learning.asc", t1s, t2s, normals);
+      IO::savePoints("seeds_with_learning.asc", seeds);
     }
-    else
+    else if(cmd.used('R') || cmd.used('D'))
     {
-      if (cmd.used('A'))
-      {
-        std::cout<<"Analyzing"<<std::endl;
-        std::vector<LPF*> descriptors;
-        std::time(&start);
-        desc.computeDescriptorsWithEfficiencyOptim(seeds, points, t1s, t2s, normals, descriptors);
-        std::time(&end);
-        std::cout<<"LPF Computation  time "<<difftime(end, start)<<" s."<<std::endl;
-        
-        std::cout<<"Perform descriptor analysis"<<std::endl;
-        
-        DescriptorAnalysis analysis(descriptors);
-        analysis.setGenericPattern(queries);
-        
-        MatrixXd t(descriptors.size(), 3);
-        t.setZero();
-        unsigned int dic_update_niter = 10;
-        
-        
-        std::cout<<"Learning a dictionary of size "<<natoms<<std::endl;
-        std::time(&start);
-        analysis.learnLPFdictionaryAndFramesICP(descriptors, D, alpha, t, t1s, t2s, normals, natoms, lambda, dic_update_niter, niter);
-        std::time(&end);
-        std::cout<<"Dictionary learning time "<<difftime(end, start)<<" s."<<std::endl;
-        
-        DescriptorReconstruction rec(radius);
-        std::cout<<"Translating the seeds"<<std::endl;
-        rec.adaptSeeds(seeds, t);
-        
-        while(! descriptors.empty())
-        {
-          if(descriptors.back() != NULL)
-            delete descriptors.back();
-          descriptors.pop_back();
-        }
-        
-        IO::saveMatrix("dictionary.asc", D);
-        IO::saveMatrix("coeffs.asc", alpha);
-        IO::savePoints("genpat.asc", queries);
-        IO::saveParams("params_with_learning.asc", t1s, t2s, normals);
-        IO::savePoints("seeds_with_learning.asc", seeds);
-      }
-      else if(cmd.used('R') || cmd.used('D'))
-      {
-        std::vector<LPF*> descriptors;
-        std::time(&start);
-        desc.computeDescriptorsWithEfficiencyOptim(seeds, points, t1s, t2s, normals, descriptors);
-        std::time(&end);
-        std::cout<<"LPF Computation  time "<<difftime(end, start)<<" s."<<std::endl;
-        
-        std::cout<<"Perform descriptor analysis"<<std::endl;
+      std::vector<LPF*> descriptors;
+      std::time(&start);
+      desc.computeDescriptorsWithEfficiencyOptim(seeds, points, t1s, t2s, normals, descriptors);
+      std::time(&end);
+      std::cout<<"LPF Computation  time "<<difftime(end, start)<<" s."<<std::endl;
+      
+      std::cout<<"Perform descriptor analysis"<<std::endl;
 
-        DescriptorAnalysis analysis(descriptors);
-        analysis.setGenericPattern(queries);
+      DescriptorAnalysis analysis(descriptors);
+      analysis.setGenericPattern(queries);
  
-        MatrixXd t(descriptors.size(), 3);
-        t.setZero();
-        unsigned int dic_update_niter = 10;
-        
-        std::cout<<"Learning a dictionary of size "<<natoms<<std::endl;
-        std::time(&start);
-        analysis.learnLPFdictionaryAndFramesICP(descriptors, D, alpha, t, t1s, t2s, normals, natoms, lambda, dic_update_niter, niter);
-        std::time(&end);
-        std::cout<<"Dictionary learning time "<<difftime(end, start)<<" s."<<std::endl;
-        
-        std::cout<<"Reconstructing the LPFs"<<std::endl;
-        DescriptorReconstruction rec(radius);
-        std::vector<LPF*> recdescs;
-        rec.buildDescriptorsFromMatrix(D*alpha, recdescs);
-        
-        std::cout<<"Translating the seeds"<<std::endl;
-        rec.adaptSeeds(seeds, t);
+      MatrixXd t(descriptors.size(), 3);
+      t.setZero();
+      unsigned int dic_update_niter = 10;
+      
+      std::cout<<"Learning a dictionary of size "<<natoms<<std::endl;
+      std::time(&start);
+      analysis.learnLPFdictionaryAndFramesICP(descriptors, D, alpha, t, t1s, t2s, normals, natoms, lambda, dic_update_niter, niter);
+      std::time(&end);
+      std::cout<<"Dictionary learning time "<<difftime(end, start)<<" s."<<std::endl;
+      
+      std::cout<<"Reconstructing the LPFs"<<std::endl;
+      DescriptorReconstruction rec(radius);
+      std::vector<LPF*> recdescs;
+      rec.buildDescriptorsFromMatrix(D*alpha, recdescs);
+      
+      std::cout<<"Translating the seeds"<<std::endl;
+      rec.adaptSeeds(seeds, t);
 
-        
-        if(cmd.used('D'))
-        {
-          std::cout<<"Denoising"<<std::endl;
-          std::time(&start);
-          Denoising denoiser(origin, size, depth);
-          denoiser.denoise(points, radius, seeds, t1s, t2s, normals, queries, recdescs,0.5);
-          std::time(&end);
-          std::cout<<"Denoising time "<<difftime(end, start)<<" s."<<std::endl;
-          IO::savePoints(outfile.c_str(), points);
-          IO::savePoints("seeds.xyz", seeds);
-        }
-        else if (cmd.used('R'))
-        {
-          std::cout<<"Resampling"<<std::endl;
-          std::vector< Vector3d > recpoints;
-          double precision = radius/ std::sqrt(queries.size());
-          std::time(&start);
-          rec.buildOctree(origin, size, precision);
-          rec.reconstructAndMerge(seeds, precision, t1s, t2s, normals, queries, recdescs, recpoints);
-          std::time(&end);
-          std::cout<<"Resampling time "<<difftime(end, start)<<" s."<<std::endl;
-          IO::savePoints(outfile.c_str(), recpoints);
-        }
-        while(! recdescs.empty())
-        {
-          if(recdescs.back() != NULL)
-            delete recdescs.back();
-          recdescs.pop_back();
-        }
-        std::cout<<"done"<<std::endl;
-        while(! descriptors.empty())
-        {
-          if(descriptors.back() != NULL)
-            delete descriptors.back();
-          descriptors.pop_back();
-        }
-      }
-      else if(cmd.used('v'))
+      
+      if(cmd.used('D'))
       {
-        std::vector<LPF*> descriptors;
+        std::cout<<"Denoising"<<std::endl;
         std::time(&start);
-        desc.computeDescriptorsWithEfficiencyOptim(seeds, points, t1s, t2s, normals, descriptors);
-        IO::saveParams("params_with_optim.asc", t1s, t2s, normals);
-        IO::savePoints("seeds_with_optim.asc", seeds);
+        Denoising denoiser(origin, size, depth);
+        denoiser.denoise(points, radius, seeds, t1s, t2s, normals, queries, recdescs,0.5);
         std::time(&end);
-        std::cout<<"LPF Computation  time "<<difftime(end, start)<<" s."<<std::endl;
-        std::cout<<"reconstructing the points from the LPFs"<<std::endl;
-        DescriptorReconstruction rec(radius);
-        rec.reconstructAndSave(seeds, t1s, t2s, normals, queries, descriptors, "uplusv.xyz");
-        rec.reconstructAndSaveTargetZones(seeds, t1s, t2s, normals, descriptors, "target_zones.xyz");
-        
-        while(! descriptors.empty())
-        {
-          if(descriptors.back() != NULL)
-            delete descriptors.back();
-          descriptors.pop_back();
-        }
+        std::cout<<"Denoising time "<<difftime(end, start)<<" s."<<std::endl;
+        IO::savePoints(outfile.c_str(), points);
+        IO::savePoints("seeds.xyz", seeds);
+      }
+      else if (cmd.used('R'))
+      {
+        std::cout<<"Resampling"<<std::endl;
+        std::vector< Vector3d > recpoints;
+        double precision = radius/ std::sqrt(queries.size());
+        std::time(&start);
+        rec.buildOctree(origin, size, precision);
+        rec.reconstructAndMerge(seeds, precision, t1s, t2s, normals, queries, recdescs, recpoints);
+        std::time(&end);
+        std::cout<<"Resampling time "<<difftime(end, start)<<" s."<<std::endl;
+        IO::savePoints(outfile.c_str(), recpoints);
+      }
+      while(! recdescs.empty())
+      {
+        if(recdescs.back() != NULL)
+          delete recdescs.back();
+        recdescs.pop_back();
+      }
+      std::cout<<"done"<<std::endl;
+      while(! descriptors.empty())
+      {
+        if(descriptors.back() != NULL)
+          delete descriptors.back();
+        descriptors.pop_back();
+      }
+    }
+    else if(cmd.used('v'))
+    {
+      std::vector<LPF*> descriptors;
+      std::time(&start);
+      desc.computeDescriptorsWithEfficiencyOptim(seeds, points, t1s, t2s, normals, descriptors);
+      IO::saveParams("params_with_optim.asc", t1s, t2s, normals);
+      IO::savePoints("seeds_with_optim.asc", seeds);
+      std::time(&end);
+      std::cout<<"LPF Computation  time "<<difftime(end, start)<<" s."<<std::endl;
+      std::cout<<"reconstructing the points from the LPFs"<<std::endl;
+      DescriptorReconstruction rec(radius);
+      rec.reconstructAndSave(seeds, t1s, t2s, normals, queries, descriptors, "uplusv.xyz");
+      rec.reconstructAndSaveTargetZones(seeds, t1s, t2s, normals, descriptors, "target_zones.xyz");
+      
+      while(! descriptors.empty())
+      {
+        if(descriptors.back() != NULL)
+          delete descriptors.back();
+        descriptors.pop_back();
       }
     }
   }
