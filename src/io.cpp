@@ -71,9 +71,6 @@ bool IO::readPoints(const char* filename, vector< Vector3d >& data)
     iss >> x >> y >> z;
   }
   
-  //debug
-  savePoints("test.xyz",data);
-  
   in.close();
   return true;
 }
