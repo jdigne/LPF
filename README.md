@@ -29,14 +29,16 @@ See the attached [LICENSE](LICENSE) file.
 
 ## Build instructions
 
-The build process relies on cmake which should be installed. Tested on Ubuntu 16.04, 18.04, 19.10.
+The build process relies on cmake. Tested on Ubuntu 16.04, 18.04, 19.10.
 
-1. Clone the project
-+ cd LPF
-+ mkdir build
-+ cd build
-+ cmake -DCMAKE_BUILD_TYPE=Release ..
-+ make
+```
+git clone https://github.com/jdigne/LPF
+cd LPF
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```
 
 This code uses the cmdLine tool by Pascal Monasse (file cmdLine.h).
 The code is shipped with Eigen and nanoflann and has no other dependency.
